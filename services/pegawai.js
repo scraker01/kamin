@@ -5,16 +5,9 @@ import { UnauthorizedError } from "../errors/UnauthorizedError.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-export const registerDokter = async ({
-  nama,
-  no_telp,
-  email,
-  password,
-  id_kelurahan,
-  role,
-  biaya_kunjungan,
-  id_spesialisasi,
-}) => {
+import { generateToken } from "../utils/token/token.js";
+
+export const registerDokter = async ({ nama, no_telp, email, password, id_kelurahan, role, biaya_kunjungan, id_spesialisasi }) => {
   const hashedPassword = await hashPassword(password);
 
   const result = await pegawaiRepo.insertPegawai({
@@ -30,14 +23,7 @@ export const registerDokter = async ({
   return result;
 };
 
-export const registerPegawai = async ({
-  nama,
-  no_telp,
-  email,
-  password,
-  id_kelurahan,
-  role,
-}) => {
+export const registerPegawai = async ({ nama, no_telp, email, password, id_kelurahan, role }) => {
   const hashedPassword = await hashPassword(password);
 
   console.log("hello");
@@ -66,13 +52,15 @@ export const loginPegawai = async ({ email, password }) => {
     throw new UnauthorizedError("incorrect password");
   }
 
-  const token = jwt.sign(
-    { id_pegawai: pegawai.id_pegawai, role: pegawai.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_LIFETIME,
-    }
-  );
+  // const token = jwt.sign(
+  //   { id_pegawai: pegawai.id_pegawai, role: pegawai.role },
+  //   process.env.JWT_SECRET,
+  //   {
+  //     expiresIn: process.env.JWT_LIFETIME,
+  //   }
+  // );
+
+  const token = generateToken({ alg: "RS256" }, { id_pengguna: pegawai.id_pegawai, role: pegawai.role });
 
   return token;
 };

@@ -7,9 +7,9 @@ import { base64urlDecode, base64urlEncode } from "./base64url.js";
 const privateKey = fs.readFileSync("./private_key.pem", "utf8");
 const publicKey = fs.readFileSync("./public_key.pem", "utf8");
 
-export const generateToken = (header, payload) => {
+export const generateToken = (header, payload, lifetime = 24 * 60 * 60 * 1000) => {
   const headerJSON = JSON.stringify(header);
-  const expirationDate = Date.now() + 1000;
+  const expirationDate = Date.now() + lifetime;
 
   const payloadJSON = JSON.stringify({ ...payload, iat: Date.now(), expiresIn: expirationDate });
 

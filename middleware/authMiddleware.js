@@ -5,10 +5,6 @@ import { ForbiddenError } from "../errors/ForbiddenError.js";
 
 export const authMiddleware = (authRole) => {
   return async (req, res, next) => {
-    if (authRole !== "dokter" && authRole !== "sis-admin" && authRole !== "pet-admin" && authRole !== "perawat" && authRole !== "pasien") {
-      return next(new Error("Invalid role"));
-    }
-
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) {
@@ -24,7 +20,7 @@ export const authMiddleware = (authRole) => {
     try {
       const payload = verifyToken(token);
 
-      if (payload.role !== authRole) {
+      if (!authRole.includes(payload.role)) {
         next(new ForbiddenError("you don't have permission"));
       }
 

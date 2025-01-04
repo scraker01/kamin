@@ -53,7 +53,7 @@ app.use(cors());
 
 // Morgan
 import morgan from "morgan";
-import { authMiddleware } from "./middleware/authMiddleware.js";
+
 app.use(morgan("dev"));
 
 // __dirname
