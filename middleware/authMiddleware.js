@@ -8,7 +8,9 @@ export const authMiddleware = (authRole) => {
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) {
-      return next(new UnauthorizedError("asuthorization header must be provided"));
+      return next(
+        new UnauthorizedError("authorization header must be provided")
+      );
     }
 
     const token = authHeader.split(" ")[1];
@@ -20,13 +22,15 @@ export const authMiddleware = (authRole) => {
     try {
       const payload = verifyToken(token);
 
+      if (Date.now() > payload.expiresIn) {
+        next(new UnauthorizedError("expired token"));
+      }
+
       if (!authRole.includes(payload.role)) {
         next(new ForbiddenError("you don't have permission"));
       }
 
-      if (Date.now() > payload.expiresIn) {
-        next(new UnauthorizedError("expired token"));
-      }
+      console.log(payload);
 
       req.user = payload;
 
